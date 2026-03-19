@@ -1,198 +1,148 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Editar Candidato</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            {{ __('Editar Candidato') }}
+        </h2>
+    </x-slot>
+
+    @push('styles')
     <style>
-        :focus-visible { outline: 3px solid #0d6efd; outline-offset: 2px; }
-        .high-contrast body,
-        .high-contrast .form-control,
-        .high-contrast .btn { background:#000 !important; color:#fff !important; }
-        .visually-hidden {
-            position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); border:0;
-        }
-        .required-indicator { color:#c00; }
+        .hc-mode, .hc-mode * { background-color: #000 !important; color: #fff !important; border-color: #fff !important; }
+        .hc-mode label, .hc-mode span { color: #fff !important; }
+        .hc-mode a, .hc-mode button { text-decoration: underline !important; color: #ff0 !important; }
+        .required-indicator { color: #dc2626; }
     </style>
-</head>
-<body>
-    <a href="#conteudo" class="visually-hidden-focusable">Pular para o conteúdo principal</a>
+    @endpush
 
-    <div class="container mt-5" id="conteudo">
-        <h1 class="h2 mb-3">Editar Candidato</h1>
-
-        <div class="d-flex gap-2 mb-3">
-            <button type="button" id="toggle-contrast" class="btn btn-sm btn-outline-secondary">Alto contraste</button>
-        </div>
-
-        @if ($errors->any())
-            <div class="alert alert-danger" role="alert" aria-live="assertive">
-                <p class="mb-2"><strong>Há problemas no formulário:</strong></p>
-                <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        @if(session('success'))
-            <div class="alert alert-success" role="status" aria-live="polite">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        <form action="{{ route('candidatos.update', $candidato->id) }}" method="POST" novalidate>
-            @csrf
-            @method('PUT')
-
-            <div class="mb-3">
-                <label for="nome" class="form-label">
-                    Nome Completo <span class="required-indicator" aria-hidden="true">*</span>
-                </label>
-                <input
-                    type="text"
-                    class="form-control @error('nome') is-invalid @enderror"
-                    id="nome"
-                    name="nome"
-                    value="{{ old('nome', $candidato->nome) }}"
-                    required
-                    aria-required="true"
-                    @error('nome') aria-describedby="erro-nome" @enderror
-                    autocomplete="name">
-                @error('nome')
-                    <div id="erro-nome" class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <div class="mb-3">
-                <label for="email" class="form-label">
-                    Email <span class="required-indicator" aria-hidden="true">*</span>
-                </label>
-                <input
-                    type="email"
-                    class="form-control @error('email') is-invalid @enderror"
-                    id="email"
-                    name="email"
-                    value="{{ old('email', $candidato->email) }}"
-                    required
-                    aria-required="true"
-                    autocomplete="email"
-                    inputmode="email"
-                    @error('email') aria-describedby="erro-email" @enderror>
-                @error('email')
-                    <div id="erro-email" class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <div class="mb-3">
-                <label for="telefone" class="form-label">
-                    Telefone <span class="required-indicator" aria-hidden="true">*</span>
-                    <span class="visually-hidden">(Formato: (99) 99999-9999)</span>
-                </label>
-                <input
-                    type="text"
-                    class="form-control @error('telefone') is-invalid @enderror"
-                    id="telefone"
-                    name="telefone"
-                    value="{{ old('telefone', $candidato->telefone_formatado ?? $candidato->telefone) }}"
-                    required
-                    aria-required="true"
-                    inputmode="tel"
-                    aria-describedby="ajuda-telefone @error('telefone') erro-telefone @enderror"
-                    placeholder="(99) 99999-9999">
-                <div id="ajuda-telefone" class="form-text">Formato esperado: (11) 98888-7777</div>
-                @error('telefone')
-                    <div id="erro-telefone" class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <fieldset class="mb-3">
-                <legend class="fs-6 mb-2">Informações de Acessibilidade (opcional)</legend>
-
-                @php
-                    $pcdChecked = old('pcd', $candidato->pcd) ? true : false;
-                @endphp
-
-                <div class="form-check mb-2">
-                    <input
-                        class="form-check-input"
-                        type="checkbox"
-                        name="pcd"
-                        id="pcd"
-                        value="1"
-                        {{ $pcdChecked ? 'checked' : '' }}>
-                    <label class="form-check-label" for="pcd">Sou Pessoa com Deficiência (PCD)</label>
-                </div>
-
-                <div class="mb-2">
-                    <label for="tipo_deficiencia" class="form-label">Tipo de deficiência (opcional)</label>
-                    <select
-                        id="tipo_deficiencia"
-                        name="tipo_deficiencia"
-                        class="form-select"
-                        {{ $pcdChecked ? '' : 'disabled' }}>
-                        <option value="">Selecione...</option>
-                        <option value="visual" {{ old('tipo_deficiencia', $candidato->tipo_deficiencia) === 'visual' ? 'selected' : '' }}>Visual</option>
-                        <option value="auditiva" {{ old('tipo_deficiencia', $candidato->tipo_deficiencia) === 'auditiva' ? 'selected' : '' }}>Auditiva</option>
-                        <option value="motora" {{ old('tipo_deficiencia', $candidato->tipo_deficiencia) === 'motora' ? 'selected' : '' }}>Motora</option>
-                        <option value="intelectual" {{ old('tipo_deficiencia', $candidato->tipo_deficiencia) === 'intelectual' ? 'selected' : '' }}>Intelectual</option>
-                        <option value="autismo" {{ old('tipo_deficiencia', $candidato->tipo_deficiencia) === 'autismo' ? 'selected' : '' }}>TEA</option>
-                        <option value="outra" {{ old('tipo_deficiencia', $candidato->tipo_deficiencia) === 'outra' ? 'selected' : '' }}>Outra</option>
-                    </select>
-                </div>
-
-                <div class="mb-3">
-                    <label for="acessibilidade" class="form-label">Necessidades de acessibilidade (opcional)</label>
-                    <textarea
-                        id="acessibilidade"
-                        name="acessibilidade"
-                        class="form-control"
-                        rows="2"
-                        maxlength="500"
-                        aria-describedby="ajuda-acess"
-                        {{ $pcdChecked ? '' : 'disabled' }}
-                    >{{ old('acessibilidade', $candidato->acessibilidade) }}</textarea>
-                    <div id="ajuda-acess" class="form-text">
-                        Ex: Intérprete de Libras, rampa, leitor de tela, tempo adicional.
-                    </div>
-                </div>
-            </fieldset>
-
-            <div class="mb-3">
-                <button type="submit" class="btn btn-primary">Atualizar</button>
-                <a href="{{ route('candidatos.index') }}" class="btn btn-secondary">Cancelar</a>
-            </div>
-        </form>
-    </div>
-
-    <script src="https://unpkg.com/imask"></script>
-    <script>
-        const telEl = document.getElementById('telefone');
-        if (telEl) IMask(telEl, { mask: '(00) 00000-0000' });
-
-        document.getElementById('toggle-contrast').addEventListener('click', () => {
-            document.documentElement.classList.toggle('high-contrast');
-        });
-
-        const pcdChk = document.getElementById('pcd');
-        const tipoDef = document.getElementById('tipo_deficiencia');
-        const acessTxt = document.getElementById('acessibilidade');
-        function togglePCDFields() {
-            const enabled = pcdChk.checked;
-            tipoDef.disabled = !enabled;
-            acessTxt.disabled = !enabled;
-            if (!enabled) {
-                tipoDef.value = '';
-                acessTxt.value = '';
+    <div class="py-12" x-data="{ 
+        highContrast: false,
+        isPcd: {{ old('pcd', $candidato->pcd) ? 'true' : 'false' }},
+        toggleContrast() {
+            this.highContrast = !this.highContrast;
+            if(this.highContrast) {
+                document.documentElement.classList.add('hc-mode');
+            } else {
+                document.documentElement.classList.remove('hc-mode');
             }
         }
-        pcdChk.addEventListener('change', togglePCDFields);
-        togglePCDFields();
+    }">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    
+                    <div class="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-4 mb-4">
+                        <h3 class="text-lg font-medium">Atualizar dados do candidato</h3>
+                        <button type="button" @click="toggleContrast()" class="inline-flex items-center px-3 py-1.5 border border-gray-300 dark:border-gray-600 shadow-sm text-xs font-medium rounded text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Alto contraste
+                        </button>
+                    </div>
 
-        const invalid = document.querySelector('.is-invalid');
-        if (invalid) invalid.focus();
-    </script>
-</body>
-</html>
+                    @if ($errors->any())
+                        <div class="mb-5 bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded relative" role="alert" aria-live="assertive">
+                            <strong class="font-bold">Há problemas no formulário:</strong>
+                            <ul class="mt-2 list-disc list-inside text-sm">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    @if(session('success'))
+                        <div class="mb-5 bg-green-100 dark:bg-green-900 border border-green-400 dark:border-green-700 text-green-700 dark:text-green-300 px-4 py-3 rounded relative" role="status" aria-live="polite">
+                            <span class="block sm:inline">{{ session('success') }}</span>
+                        </div>
+                    @endif
+
+                    <form action="{{ route('candidatos.update', $candidato->id) }}" method="POST" novalidate class="space-y-6">
+                        @csrf
+                        @method('PUT')
+
+                        <div>
+                            <label for="nome" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Nome Completo <span class="required-indicator" aria-hidden="true">*</span>
+                            </label>
+                            <input type="text" id="nome" name="nome" value="{{ old('nome', $candidato->nome) }}" required aria-required="true" autocomplete="name"
+                                @error('nome') aria-describedby="erro-nome" @enderror
+                                class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm @error('nome') border-red-500 focus:border-red-500 focus:ring-red-500 @enderror">
+                            @error('nome')
+                                <p class="mt-2 text-sm text-red-600 dark:text-red-400" id="erro-nome">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Email <span class="required-indicator" aria-hidden="true">*</span>
+                            </label>
+                            <input type="email" id="email" name="email" value="{{ old('email', $candidato->email) }}" required aria-required="true" autocomplete="email" inputmode="email"
+                                @error('email') aria-describedby="erro-email" @enderror
+                                class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm @error('email') border-red-500 focus:border-red-500 focus:ring-red-500 @enderror">
+                            @error('email')
+                                <p class="mt-2 text-sm text-red-600 dark:text-red-400" id="erro-email">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div x-data x-init="IMask($refs.telefone, { mask: '(00) 00000-0000' })">
+                            <label for="telefone" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Telefone <span class="required-indicator" aria-hidden="true">*</span>
+                                <span class="sr-only">(Formato: (99) 99999-9999)</span>
+                            </label>
+                            <input type="tel" id="telefone" name="telefone" x-ref="telefone" value="{{ old('telefone', $candidato->telefone_formatado ?? $candidato->telefone) }}" required aria-required="true" inputmode="tel" placeholder="(99) 99999-9999"
+                                aria-describedby="ajuda-telefone @error('telefone') erro-telefone @enderror"
+                                class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm @error('telefone') border-red-500 focus:border-red-500 focus:ring-red-500 @enderror">
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400" id="ajuda-telefone">Formato esperado: (11) 98888-7777</p>
+                            @error('telefone')
+                                <p class="mt-2 text-sm text-red-600 dark:text-red-400" id="erro-telefone">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <fieldset class="border border-gray-200 dark:border-gray-700 rounded-md p-4 bg-gray-50 dark:bg-gray-800/50">
+                            <legend class="text-base font-medium text-gray-900 dark:text-gray-100 px-2">Informações de Acessibilidade (opcional)</legend>
+                            
+                            <div class="mt-4 flex items-start">
+                                <div class="flex items-center h-5">
+                                    <input type="checkbox" id="pcd" name="pcd" value="1" x-model="isPcd" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 dark:bg-gray-700 rounded">
+                                </div>
+                                <div class="ml-3 text-sm">
+                                    <label for="pcd" class="font-medium text-gray-700 dark:text-gray-300">Sou Pessoa com Deficiência (PCD)</label>
+                                </div>
+                            </div>
+
+                            <div class="mt-4">
+                                <label for="tipo_deficiencia" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tipo de deficiência (opcional)</label>
+                                <select id="tipo_deficiencia" name="tipo_deficiencia" x-bind:disabled="!isPcd" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md disabled:opacity-50 disabled:bg-gray-100 disabled:cursor-not-allowed dark:disabled:bg-gray-900">
+                                    <option value="">Selecione...</option>
+                                    <option value="visual" {{ old('tipo_deficiencia', $candidato->tipo_deficiencia) === 'visual' ? 'selected' : '' }}>Visual</option>
+                                    <option value="auditiva" {{ old('tipo_deficiencia', $candidato->tipo_deficiencia) === 'auditiva' ? 'selected' : '' }}>Auditiva</option>
+                                    <option value="motora" {{ old('tipo_deficiencia', $candidato->tipo_deficiencia) === 'motora' ? 'selected' : '' }}>Motora</option>
+                                    <option value="intelectual" {{ old('tipo_deficiencia', $candidato->tipo_deficiencia) === 'intelectual' ? 'selected' : '' }}>Intelectual</option>
+                                    <option value="autismo" {{ old('tipo_deficiencia', $candidato->tipo_deficiencia) === 'autismo' ? 'selected' : '' }}>TEA</option>
+                                    <option value="outra" {{ old('tipo_deficiencia', $candidato->tipo_deficiencia) === 'outra' ? 'selected' : '' }}>Outra</option>
+                                </select>
+                            </div>
+
+                            <div class="mt-4">
+                                <label for="acessibilidade" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Necessidades de acessibilidade (opcional)</label>
+                                <textarea id="acessibilidade" name="acessibilidade" rows="2" maxlength="500" x-bind:disabled="!isPcd" aria-describedby="ajuda-acess" class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm disabled:opacity-50 disabled:bg-gray-100 disabled:cursor-not-allowed dark:disabled:bg-gray-900">{{ old('acessibilidade', $candidato->acessibilidade) }}</textarea>
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400" id="ajuda-acess">Ex: Intérprete de Libras, rampa, leitor de tela, tempo adicional.</p>
+                            </div>
+                        </fieldset>
+
+                        <div class="flex items-center justify-end pt-4 border-t border-gray-200 dark:border-gray-700 space-x-3">
+                            <a href="{{ route('candidatos.index') }}" class="inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 py-2 px-4 text-sm font-medium text-gray-700 dark:text-gray-300 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                Cancelar
+                            </a>
+                            <button type="submit" class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                Atualizar Candidato
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @push('scripts')
+        <script src="https://unpkg.com/imask"></script>
+    @endpush
+</x-app-layout>
