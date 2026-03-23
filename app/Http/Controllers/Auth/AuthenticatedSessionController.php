@@ -28,6 +28,11 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // Redireciona conforme o papel do usuário
+        if ($request->user()->isCandidato()) {
+            return redirect()->intended(route('usuario.dashboard', absolute: false));
+        }
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
