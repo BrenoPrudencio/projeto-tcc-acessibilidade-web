@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\VagaController;
 use App\Http\Controllers\CandidatoController;
+use App\Http\Controllers\Usuario\VagaController as UsuarioVagaController;
 use Illuminate\Support\Facades\Route;
 
 // Rota da página inicial pública
@@ -10,8 +11,15 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Rota do Dashboard
+// --- ROTAS PÚBLICAS (sem autenticação) ---
+Route::get('/vagas', [UsuarioVagaController::class, 'index'])->name('usuario.vagas.index');
+Route::get('/vagas/{vaga}', [UsuarioVagaController::class, 'show'])->name('usuario.vagas.show');
+
+// Rota do Dashboard — redireciona candidato para seu painel
 Route::get('/dashboard', function () {
+    if (auth()->user()->isCandidato()) {
+        return redirect()->route('usuario.dashboard');
+    }
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -22,11 +30,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // --- ROTAS DO ADMIN ---
-    // Rotas de Vagas e Candidatos existentes são parte do Admin agora?
-    // De acordo com a DOCS, a gestão de Vagas é Admin. Vamos deixar como está ou com o middleware admin?
-    // A DOCS pede um grupo novo "painel" com middleware "role:candidato".
-    Route::middleware(['role:admin'])->group(function () {
+    // --- ROTAS DO ADMIN (prefixo /admin) ---
+    Route::middleware(['role:admin'])->prefix('admin')->group(function () {
         Route::delete('/vagas/destroy-mass', [VagaController::class, 'destroyMass'])->name('vagas.destroy.mass');
         Route::post('/vagas/{vaga}/inscrever', [VagaController::class, 'inscrever'])->name('vagas.inscrever');
         Route::delete('/vagas/{vaga}/candidatos/{candidato}', [VagaController::class, 'cancelarInscricao'])->name('vagas.cancelarInscricao');
@@ -41,6 +46,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard', function () {
             return view('usuario.dashboard');
         })->name('dashboard');
+
+        Route::post('/candidaturas', [App\Http\Controllers\Usuario\CandidaturaController::class, 'store'])->name('candidaturas.store');
+        Route::delete('/candidaturas/{candidatura}', [App\Http\Controllers\Usuario\CandidaturaController::class, 'destroy'])->name('candidaturas.destroy');
     });
 });
 
