@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Usuario;
 
 use App\Http\Controllers\Controller;
+use App\Models\Candidato;
 use App\Models\Vaga;
 use Illuminate\Http\Request;
 
@@ -45,9 +46,15 @@ class VagaController extends Controller
                 ->exists();
         }
 
+        $candidato = null;
+        if (auth()->check() && auth()->user()->candidato_id) {
+            $candidato = Candidato::find(auth()->user()->candidato_id);
+        }
+
         return view('usuario.vagas.show', [
             'vaga' => $vaga,
             'jaInscrito' => $jaInscrito,
+            'candidato' => $candidato,
         ]);
     }
 }
