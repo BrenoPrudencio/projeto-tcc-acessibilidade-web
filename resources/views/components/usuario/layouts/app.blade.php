@@ -219,6 +219,15 @@
         </footer>
     </div>
 
+    <script src="https://unpkg.com/imask"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var telefoneEl = document.getElementById('telefone');
+            if (telefoneEl) {
+                IMask(telefoneEl, { mask: '(00) 00000-0000' });
+            }
+        });
+    </script>
     @stack('scripts')
 </body>
 
