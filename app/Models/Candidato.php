@@ -45,6 +45,6 @@ class Candidato extends Model
      */
     public function vagas()
     {
-        return $this->belongsToMany(Vaga::class, 'candidaturas');
+        return $this->belongsToMany(Vaga::class, 'candidaturas')->withTimestamps()->withPivot('id');
     }
 }
