@@ -10,6 +10,21 @@ use Illuminate\Http\Request;
 class CandidaturaController extends Controller
 {
     /**
+     * Lista todas as candidaturas do candidato autenticado.
+     */
+    public function index()
+    {
+        $user = auth()->user();
+        $candidato = $user->candidato;
+
+        $candidaturas = $candidato
+            ? $candidato->vagas()->latest('candidaturas.created_at')->paginate(10)
+            : collect();
+
+        return view('usuario.candidaturas.index', compact('candidaturas'));
+    }
+
+    /**
      * Inscreve o candidato autenticado em uma vaga,
      * atualizando o perfil com telefone e dados PCD.
      */
