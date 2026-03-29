@@ -14,12 +14,27 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <script>
+        // Tema claro/escuro
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
         } else {
             document.documentElement.classList.remove('dark');
         }
+        // Tamanho de fonte
+        const tamanhos = { normal: '100%', large: '112.5%', xlarge: '125%' };
+        const fs = localStorage.getItem('a11y_fontSize') || 'normal';
+        document.documentElement.style.fontSize = tamanhos[fs] || '100%';
+        // Reduzir animações
+        if (localStorage.getItem('a11y_reduceMotion') === 'true') {
+            document.documentElement.classList.add('reduce-motion');
+        }
     </script>
+    <style>
+        .reduce-motion *, .reduce-motion *::before, .reduce-motion *::after {
+            animation-duration: 0.01ms !important;
+            transition-duration: 0.01ms !important;
+        }
+    </style>
 
     @stack('styles')
 
@@ -74,6 +89,9 @@
                                     <x-nav-link :href="route('usuario.dashboard')" :active="request()->routeIs('usuario.dashboard')">
                                         {{ __('Meu Painel') }}
                                     </x-nav-link>
+                                    <x-nav-link :href="route('usuario.candidaturas.index')" :active="request()->routeIs('usuario.candidaturas.*')">
+                                        {{ __('Candidaturas') }}
+                                    </x-nav-link>
                                 @endif
                             @endauth
                         </div>
@@ -111,8 +129,14 @@
                                 </x-slot>
 
                                 <x-slot name="content">
+                                    <x-dropdown-link :href="route('usuario.perfil.edit')">
+                                        {{ __('Meu Perfil') }}
+                                    </x-dropdown-link>
+                                    <x-dropdown-link :href="route('usuario.acessibilidade')">
+                                        {{ __('Acessibilidade') }}
+                                    </x-dropdown-link>
                                     <x-dropdown-link :href="route('profile.edit')">
-                                        {{ __('Perfil') }}
+                                        {{ __('Conta') }}
                                     </x-dropdown-link>
 
                                     <form method="POST" action="{{ route('logout') }}">
@@ -164,6 +188,9 @@
                             <x-responsive-nav-link :href="route('usuario.dashboard')" :active="request()->routeIs('usuario.dashboard')">
                                 {{ __('Meu Painel') }}
                             </x-responsive-nav-link>
+                            <x-responsive-nav-link :href="route('usuario.candidaturas.index')" :active="request()->routeIs('usuario.candidaturas.*')">
+                                {{ __('Candidaturas') }}
+                            </x-responsive-nav-link>
                         @endif
                     @endauth
                 </div>
@@ -175,8 +202,14 @@
                             <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
                         </div>
                         <div class="mt-3 space-y-1">
+                            <x-responsive-nav-link :href="route('usuario.perfil.edit')">
+                                {{ __('Meu Perfil') }}
+                            </x-responsive-nav-link>
+                            <x-responsive-nav-link :href="route('usuario.acessibilidade')">
+                                {{ __('Acessibilidade') }}
+                            </x-responsive-nav-link>
                             <x-responsive-nav-link :href="route('profile.edit')">
-                                {{ __('Perfil') }}
+                                {{ __('Conta') }}
                             </x-responsive-nav-link>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf

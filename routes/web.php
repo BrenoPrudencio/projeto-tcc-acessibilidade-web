@@ -43,12 +43,18 @@ Route::middleware('auth')->group(function () {
 
     // --- ROTAS DO CANDIDATO ---
     Route::middleware(['role:candidato'])->prefix('painel')->name('usuario.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('usuario.dashboard');
-        })->name('dashboard');
+        Route::get('/dashboard', [App\Http\Controllers\Usuario\DashboardController::class, 'index'])->name('dashboard');
 
+        Route::get('/candidaturas', [App\Http\Controllers\Usuario\CandidaturaController::class, 'index'])->name('candidaturas.index');
         Route::post('/candidaturas', [App\Http\Controllers\Usuario\CandidaturaController::class, 'store'])->name('candidaturas.store');
         Route::delete('/candidaturas/{candidatura}', [App\Http\Controllers\Usuario\CandidaturaController::class, 'destroy'])->name('candidaturas.destroy');
+
+        Route::get('/perfil', [App\Http\Controllers\Usuario\PerfilController::class, 'edit'])->name('perfil.edit');
+        Route::put('/perfil', [App\Http\Controllers\Usuario\PerfilController::class, 'update'])->name('perfil.update');
+
+        Route::get('/acessibilidade', function () {
+            return view('usuario.acessibilidade.index');
+        })->name('acessibilidade');
     });
 });
 
