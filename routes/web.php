@@ -6,9 +6,14 @@ use App\Http\Controllers\CandidatoController;
 use App\Http\Controllers\Usuario\VagaController as UsuarioVagaController;
 use Illuminate\Support\Facades\Route;
 
-// Rota da página inicial pública
+// Rota da página inicial — redireciona para login ou painel se já autenticado
 Route::get('/', function () {
-    return view('welcome');
+    if (auth()->check()) {
+        return auth()->user()->isCandidato()
+            ? redirect()->route('usuario.dashboard')
+            : redirect()->route('dashboard');
+    }
+    return redirect()->route('login');
 });
 
 // --- ROTAS PÚBLICAS (sem autenticação) ---
