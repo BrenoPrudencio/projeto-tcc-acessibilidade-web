@@ -31,15 +31,23 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'name'             => ['required', 'string', 'max:255'],
+            'email'            => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'password'         => ['required', 'confirmed', Rules\Password::defaults()],
+            'telefone'         => ['required', 'string', 'max:20'],
+            'pcd'              => ['nullable', 'boolean'],
+            'tipo_deficiencia' => ['nullable', 'required_if:pcd,1', 'string', 'max:100'],
+            'acessibilidade'   => ['nullable', 'string', 'max:1000'],
         ]);
 
         // Cria o registro de Candidato vinculado
         $candidato = Candidato::create([
-            'nome' => $request->name,
-            'email' => $request->email,
+            'nome'             => $request->name,
+            'email'            => $request->email,
+            'telefone'         => $request->telefone,
+            'pcd'              => $request->boolean('pcd'),
+            'tipo_deficiencia' => $request->pcd ? $request->tipo_deficiencia : null,
+            'acessibilidade'   => $request->acessibilidade,
         ]);
 
         $user = User::create([
