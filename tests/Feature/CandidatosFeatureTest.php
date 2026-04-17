@@ -11,11 +11,14 @@ class CandidatosFeatureTest extends TestCase
 {
     use RefreshDatabase;
 
+    private function makeAdmin(): User
+    {
+        return User::factory()->create(['role' => 'admin']);
+    }
+
     public function test_candidatos_index_page_can_be_rendered(): void
     {
-        $user = User::factory()->create(); // <-- 2. Crie um usuário
-
-        $response = $this->actingAs($user)->get(route('candidatos.index')); // <-- 3. Use actingAs()
+        $response = $this->actingAs($this->makeAdmin())->get(route('candidatos.index'));
 
         $response->assertStatus(200);
         $response->assertSee('Lista de Candidatos');
@@ -23,24 +26,22 @@ class CandidatosFeatureTest extends TestCase
 
     public function test_a_created_candidato_appears_on_the_index_page(): void
     {
-        $user = User::factory()->create();
         $candidato = Candidato::factory()->create(['nome' => 'Candidato de Teste']);
 
-        $response = $this->actingAs($user)->get(route('candidatos.index'));
+        $response = $this->actingAs($this->makeAdmin())->get(route('candidatos.index'));
 
         $response->assertSee('Candidato de Teste');
     }
 
     public function test_a_candidato_can_be_created_via_form(): void
     {
-        $user = User::factory()->create();
         $candidatoData = [
             'nome' => 'João da Silva',
             'email' => 'joao.silva@example.com',
             'telefone' => '11999998888',
         ];
 
-        $response = $this->actingAs($user)->post(route('candidatos.store'), $candidatoData);
+        $response = $this->actingAs($this->makeAdmin())->post(route('candidatos.store'), $candidatoData);
 
         $response->assertRedirect(route('candidatos.index'));
         $this->assertDatabaseHas('candidatos', ['email' => 'joao.silva@example.com']);
@@ -49,7 +50,6 @@ class CandidatosFeatureTest extends TestCase
 
     public function test_candidato_creation_fails_with_duplicate_email(): void
     {
-        $user = User::factory()->create();
         Candidato::factory()->create(['email' => 'email.existente@example.com']);
 
         $candidatoData = [
@@ -58,7 +58,7 @@ class CandidatosFeatureTest extends TestCase
             'telefone' => '22988887777',
         ];
 
-        $response = $this->actingAs($user)->post(route('candidatos.store'), $candidatoData);
+        $response = $this->actingAs($this->makeAdmin())->post(route('candidatos.store'), $candidatoData);
 
         $response->assertSessionHasErrors('email');
         $this->assertDatabaseCount('candidatos', 1);
