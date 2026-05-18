@@ -50,7 +50,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                         </svg>
                         <p class="text-gray-500 dark:text-gray-400 font-medium">Você ainda não se candidatou a nenhuma vaga.</p>
-                        <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Explore as oportunidades disponíveis e envie sua candidatura.</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">Explore as oportunidades disponíveis e envie sua candidatura.</p>
                         <a href="{{ route('usuario.vagas.index') }}"
                            class="mt-4 inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition">
                             Ver vagas disponíveis

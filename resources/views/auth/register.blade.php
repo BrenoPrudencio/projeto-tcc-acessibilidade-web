@@ -227,7 +227,7 @@
             </x-primary-button>
         </div>
 
-        <p class="mt-4 text-xs text-center text-gray-400">
+        <p class="mt-4 text-xs text-center text-gray-600">
             Ao se cadastrar, você concorda com nossos termos de uso.
         </p>
     </form>

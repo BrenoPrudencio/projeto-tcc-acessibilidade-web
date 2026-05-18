@@ -160,7 +160,7 @@
                     {{-- Botao hamburger mobile --}}
                     <div class="-me-2 flex items-center sm:hidden">
                         <button @click="open = !open"
-                            class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-900 focus:text-gray-500 dark:focus:text-gray-400 transition duration-150 ease-in-out"
+                            class="inline-flex items-center justify-center p-2 rounded-md text-gray-600 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-900 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-900 focus:text-gray-700 dark:focus:text-gray-300 transition duration-150 ease-in-out"
                             aria-label="Abrir menu de navegacao"
                             :aria-expanded="open.toString()">
                             <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24" aria-hidden="true">
@@ -244,11 +244,136 @@
             {{ $slot }}
         </main>
 
-        <footer class="bg-white dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700 text-center p-4 mt-8">
-            <p class="text-sm text-gray-600 dark:text-gray-400">
-                &copy; {{ date('Y') }} {{ config('app.name', 'Painel de Vagas') }} &mdash;
-                <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline">Politica de Acessibilidade</a>
-            </p>
+        <footer role="contentinfo"
+            class="bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 mt-12"
+            aria-label="Rodapé do site">
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
+
+                    {{-- Coluna 1: Identidade --}}
+                    <div>
+                        <p class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                            {{ config('app.name', 'Painel de Vagas') }}
+                        </p>
+                        <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                            Plataforma inclusiva de emprego.<br>
+                            Desenvolvida em conformidade com a<br>
+                            <strong>WCAG 2.1 — Nível AA</strong>.
+                        </p>
+                    </div>
+
+                    {{-- Coluna 2: Navegação --}}
+                    <nav aria-label="Links do rodapé">
+                        <p class="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-3">
+                            Navegação
+                        </p>
+                        <ul role="list" class="space-y-2">
+                            <li>
+                                <a href="{{ route('usuario.vagas.index') }}"
+                                    class="text-sm text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-400
+                                           focus:outline-none focus:ring-2 focus:ring-blue-500 rounded transition-colors">
+                                    Vagas disponíveis
+                                </a>
+                            </li>
+                            @auth
+                                @if(auth()->user()->isCandidato())
+                                    <li>
+                                        <a href="{{ route('usuario.dashboard') }}"
+                                            class="text-sm text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-400
+                                                   focus:outline-none focus:ring-2 focus:ring-blue-500 rounded transition-colors">
+                                            Meu Painel
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('usuario.candidaturas.index') }}"
+                                            class="text-sm text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-400
+                                                   focus:outline-none focus:ring-2 focus:ring-blue-500 rounded transition-colors">
+                                            Minhas Candidaturas
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('usuario.perfil.edit') }}"
+                                            class="text-sm text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-400
+                                                   focus:outline-none focus:ring-2 focus:ring-blue-500 rounded transition-colors">
+                                            Meu Perfil
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ route('usuario.acessibilidade') }}"
+                                            class="text-sm text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-400
+                                                   focus:outline-none focus:ring-2 focus:ring-blue-500 rounded transition-colors">
+                                            Preferências de Acessibilidade
+                                        </a>
+                                    </li>
+                                @endif
+                            @else
+                                <li>
+                                    <a href="{{ route('login') }}"
+                                        class="text-sm text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-400
+                                               focus:outline-none focus:ring-2 focus:ring-blue-500 rounded transition-colors">
+                                        Entrar
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('register') }}"
+                                        class="text-sm text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-400
+                                               focus:outline-none focus:ring-2 focus:ring-blue-500 rounded transition-colors">
+                                        Criar conta
+                                    </a>
+                                </li>
+                            @endauth
+                        </ul>
+                    </nav>
+
+                    {{-- Coluna 3: Acessibilidade --}}
+                    <div>
+                        <p class="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-3">
+                            Acessibilidade
+                        </p>
+                        <ul role="list" class="space-y-2">
+                            <li>
+                                <a href="{{ route('usuario.acessibilidade') }}"
+                                    class="text-sm text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-400
+                                           focus:outline-none focus:ring-2 focus:ring-blue-500 rounded transition-colors">
+                                    Política de Acessibilidade
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.w3.org/TR/WCAG21/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="text-sm text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-400
+                                           focus:outline-none focus:ring-2 focus:ring-blue-500 rounded transition-colors"
+                                    aria-label="WCAG 2.1 — abre em nova aba">
+                                    WCAG 2.1
+                                    <span class="sr-only">(abre em nova aba)</span>
+                                </a>
+                            </li>
+                            <li>
+                                <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+                                    Compatível com leitores de tela<br>
+                                    NVDA, JAWS e VoiceOver.<br>
+                                    Suporte a VLibras (Libras).
+                                </p>
+                            </li>
+                        </ul>
+                    </div>
+
+                </div>
+
+                {{-- Linha divisória + copyright --}}
+                <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                    <p class="text-xs text-gray-600 dark:text-gray-400">
+                        &copy; {{ date('Y') }} {{ config('app.name', 'Painel de Vagas') }}. Todos os direitos reservados.
+                    </p>
+                    <p class="text-xs text-gray-600 dark:text-gray-400">
+                        Em conformidade com a
+                        <abbr title="Lei Brasileira de Inclusão da Pessoa com Deficiência">LBI</abbr>
+                        nº 13.146/2015.
+                    </p>
+                </div>
+            </div>
         </footer>
     </div>
 
